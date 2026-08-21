@@ -109,5 +109,9 @@ fun PantallaRegistro(navController: NavController) {
         ) {
             Text("Guardar Registro")
         }
+        TextButton(onClick = { navController.navigate("login") }) {
+            Text("Volver")
+        }
     }
+
 }
