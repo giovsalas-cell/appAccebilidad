@@ -8,7 +8,7 @@ data class Usuario(
     val email: String,
     val contrasena: String,
     val nombre: String = "",
-    val preferenciaAccesibilidad: String = "Texto a voz"
+    val preferenciaAccesibilidad: String = "Texto a Voz"
 )
 
 // Lista global que almacena inicialmente los usuarios de prueba requeridos
