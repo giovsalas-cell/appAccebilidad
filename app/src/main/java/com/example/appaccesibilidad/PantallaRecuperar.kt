@@ -12,6 +12,7 @@ import androidx.navigation.NavController
 fun PantallaRecuperar(navController: NavController) {
     var email by remember { mutableStateOf("") }
     var mensaje by remember { mutableStateOf("") }
+    var esError by remember { mutableStateOf(false) }
 
     Column(
         modifier = Modifier
@@ -34,16 +35,37 @@ fun PantallaRecuperar(navController: NavController) {
         Spacer(modifier = Modifier.height(16.dp))
 
         Button(
-            onClick = { mensaje = "Se ha enviado un enlace de recuperación a $email" },
+            onClick = {
+                val emailLimpio = email.trim()
+                if (!emailLimpio.esEmailValido()) {
+                    mensaje = "Por favor, ingresa un correo válido."
+                    esError = true
+                } else {
+                    // Verificación contra la lista precargada
+                    val existe = listaUsuarios.any { it.email.equals(emailLimpio, ignoreCase = true) }
+                    if (existe) {
+                        mensaje = "Se ha enviado un enlace de recuperación a $emailLimpio"
+                        esError = false
+                    } else {
+                        mensaje = "El correo ingresado no corresponde a ningún usuario registrado."
+                        esError = true
+                    }
+                }
+            },
             modifier = Modifier.fillMaxWidth()
         ) {
             Text("Enviar Correo")
         }
 
         if (mensaje.isNotEmpty()) {
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(text = mensaje, color = MaterialTheme.colorScheme.primary)
+            Spacer(modifier = Modifier.height(12.dp))
+            Text(
+                text = mensaje,
+                color = if (esError) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary
+            )
         }
+
+        Spacer(modifier = Modifier.height(8.dp))
 
         TextButton(onClick = { navController.popBackStack() }) {
             Text("Volver al Login")

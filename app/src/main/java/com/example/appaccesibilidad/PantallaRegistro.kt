@@ -16,6 +16,7 @@ fun PantallaRegistro(navController: NavController) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var nombre by remember { mutableStateOf("") }
+    var mensajeError by remember { mutableStateOf("") }
 
     var expandirMenu by remember { mutableStateOf(false) }
     var preferenciaSeleccionada by remember { mutableStateOf("Texto a Voz") }
@@ -59,7 +60,7 @@ fun PantallaRegistro(navController: NavController) {
 
         Spacer(modifier = Modifier.height(12.dp))
 
-        // Combo Box (DropdownMenu)
+        // Selector Combo Box
         Box(modifier = Modifier.fillMaxWidth()) {
             Button(onClick = { expandirMenu = true }, modifier = Modifier.fillMaxWidth()) {
                 Text("Preferencia UI: $preferenciaSeleccionada")
@@ -95,13 +96,34 @@ fun PantallaRegistro(navController: NavController) {
             Text("Acepto los términos de accesibilidad")
         }
 
+        if (mensajeError.isNotEmpty()) {
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(text = mensajeError, color = MaterialTheme.colorScheme.error)
+        }
+
         Spacer(modifier = Modifier.height(16.dp))
+
+        // Dentro de PantallaRegistro.kt, en el evento onClick del Button:
 
         Button(
             onClick = {
-                if (aceptaTerminos && email.isNotEmpty() && password.isNotEmpty()) {
-                    listaUsuarios.add(Usuario(email, password, nombre, preferenciaSeleccionada))
-                    navController.popBackStack()
+                val emailLimpio = email.trim()
+
+                when {
+                    !emailLimpio.esEmailValido() -> {
+                        mensajeError = "El formato del correo electrónico es inválido."
+                    }
+                    listaUsuarios.any { it.email.equals(emailLimpio, ignoreCase = true) } -> {
+                        mensajeError = "El correo ingresado ya se encuentra registrado."
+                    }
+                    password.isBlank() || nombre.isBlank() -> {
+                        mensajeError = "Todos los campos son obligatorios."
+                    }
+                    else -> {
+                        // Registro exitoso e ilimitado
+                        listaUsuarios.add(Usuario(emailLimpio, password, nombre, preferenciaSeleccionada))
+                        navController.popBackStack()
+                    }
                 }
             },
             enabled = aceptaTerminos,
@@ -109,9 +131,9 @@ fun PantallaRegistro(navController: NavController) {
         ) {
             Text("Guardar Registro")
         }
-        TextButton(onClick = { navController.navigate("login") }) {
+
+        TextButton(onClick = { navController.popBackStack() }) {
             Text("Volver")
         }
     }
-
 }

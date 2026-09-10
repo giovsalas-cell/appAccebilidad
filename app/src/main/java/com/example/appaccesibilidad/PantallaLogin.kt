@@ -52,20 +52,22 @@ fun PantallaLogin(navController: NavController) {
 
         Button(
             onClick = {
-                // 1. Buscamos al usuario en la lista global
-                val usuarioEncontrado = listaUsuarios.find { it.email == email && it.contrasena == password }
+                // Manejo de excepciones y búsqueda con Kotlin Lambdas
+                try {
+                    val usuarioEncontrado = listaUsuarios.find { it.email.trim() == email.trim() && it.contrasena == password }
 
-                if (usuarioEncontrado != null) {
-                    mensajeError = "" // Limpiamos el texto de error
-
-                    // 2. Dependiendo de quién sea, ordenamos al navController cambiar de vista:
-                    if (usuarioEncontrado.email == "admin@duoc.cl") {
-                        navController.navigate("admin")
+                    if (usuarioEncontrado != null) {
+                        mensajeError = ""
+                        if (usuarioEncontrado.email == "admin@duoc.cl") {
+                            navController.navigate("admin")
+                        } else {
+                            navController.navigate("usuario/${usuarioEncontrado.email}")
+                        }
                     } else {
-                        navController.navigate("usuario")
+                        mensajeError = "Usuario o contraseña incorrectos"
                     }
-                } else {
-                    mensajeError = "Usuario o contraseña incorrectos"
+                } catch (e: Exception) {
+                    mensajeError = "Ocurrió un error al procesar el inicio de sesión."
                 }
             },
             modifier = Modifier.fillMaxWidth()
