@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/widget_fondo"
+    android:orientation="vertical"
+    android:padding="8dp">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="@string/widget_titulo"
+        android:textColor="#FFFFFF"
+        android:textSize="16sp"
+        android:textStyle="bold" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/widget_btn_escribir"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:contentDescription="@string/widget_escribir"
+            android:text="@string/widget_escribir" />
+
+        <Button
+            android:id="@+id/widget_btn_hablar"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:contentDescription="@string/widget_hablar"
+            android:text="@string/widget_hablar" />
+
+        <Button
+            android:id="@+id/widget_btn_buscar"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:contentDescription="@string/widget_buscar"
+            android:text="@string/widget_buscar" />
+    </LinearLayout>
+</LinearLayout>

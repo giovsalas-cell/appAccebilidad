@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">AppAccesibilidad</string>
+    <string name="widget_descripcion">Accesos directos a Escribir, Hablar y Buscar dispositivo</string>
+    <string name="widget_titulo">Acceso rápido</string>
+    <string name="widget_escribir">Escribir</string>
+    <string name="widget_hablar">Hablar</string>
+    <string name="widget_buscar">Buscar</string>
 </resources>

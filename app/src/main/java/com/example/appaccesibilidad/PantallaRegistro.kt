@@ -1,33 +1,56 @@
 package com.example.appaccesibilidad
 
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawingPadding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.Checkbox
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.RadioButton
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
+import com.example.appaccesibilidad.model.PREFERENCIAS_ACCESIBILIDAD
+import com.example.appaccesibilidad.viewmodel.AuthViewModel
 
 @Composable
-fun PantallaRegistro(navController: NavController) {
+fun PantallaRegistro(navController: NavController, authViewModel: AuthViewModel) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var nombre by remember { mutableStateOf("") }
-    var mensajeError by remember { mutableStateOf("") }
-
     var expandirMenu by remember { mutableStateOf(false) }
-    var preferenciaSeleccionada by remember { mutableStateOf("Texto a Voz") }
-    val opciones = listOf("Texto a Voz", "Vibración / Alertas", "Subtítulos Visuales")
-
+    var preferenciaSeleccionada by remember { mutableStateOf(PREFERENCIAS_ACCESIBILIDAD.first()) }
     var aceptaTerminos by remember { mutableStateOf(false) }
-    var tipoPerfil by remember { mutableStateOf("Usuario") }
+    var tipoPerfil by remember { mutableStateOf("Personal") }
+    val ui by authViewModel.ui.collectAsStateWithLifecycle()
 
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .safeDrawingPadding()
             .padding(24.dp)
             .verticalScroll(rememberScrollState()),
         horizontalAlignment = Alignment.CenterHorizontally
@@ -40,6 +63,7 @@ fun PantallaRegistro(navController: NavController) {
             value = nombre,
             onValueChange = { nombre = it },
             label = { Text("Nombre Completo") },
+            singleLine = true,
             modifier = Modifier.fillMaxWidth()
         )
 
@@ -47,26 +71,28 @@ fun PantallaRegistro(navController: NavController) {
             value = email,
             onValueChange = { email = it },
             label = { Text("Correo Electrónico") },
+            singleLine = true,
             modifier = Modifier.fillMaxWidth()
         )
 
         OutlinedTextField(
             value = password,
             onValueChange = { password = it },
-            label = { Text("Contraseña") },
+            label = { Text("Contraseña (mínimo 6 caracteres)") },
+            singleLine = true,
             visualTransformation = PasswordVisualTransformation(),
             modifier = Modifier.fillMaxWidth()
         )
 
         Spacer(modifier = Modifier.height(12.dp))
 
-        // Selector Combo Box
+        // Selector tipo Combo Box
         Box(modifier = Modifier.fillMaxWidth()) {
             Button(onClick = { expandirMenu = true }, modifier = Modifier.fillMaxWidth()) {
                 Text("Preferencia UI: $preferenciaSeleccionada")
             }
             DropdownMenu(expanded = expandirMenu, onDismissRequest = { expandirMenu = false }) {
-                opciones.forEach { opcion ->
+                PREFERENCIAS_ACCESIBILIDAD.forEach { opcion ->
                     DropdownMenuItem(
                         text = { Text(opcion) },
                         onClick = {
@@ -82,8 +108,8 @@ fun PantallaRegistro(navController: NavController) {
 
         // Radio Buttons
         Text("Tipo de Cuenta:")
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            RadioButton(selected = (tipoPerfil == "Usuario"), onClick = { tipoPerfil = "Usuario" })
+        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center) {
+            RadioButton(selected = (tipoPerfil == "Personal"), onClick = { tipoPerfil = "Personal" })
             Text("Personal")
             Spacer(modifier = Modifier.width(16.dp))
             RadioButton(selected = (tipoPerfil == "Acompañante"), onClick = { tipoPerfil = "Acompañante" })
@@ -96,43 +122,26 @@ fun PantallaRegistro(navController: NavController) {
             Text("Acepto los términos de accesibilidad")
         }
 
-        if (mensajeError.isNotEmpty()) {
+        ui.error?.let {
             Spacer(modifier = Modifier.height(8.dp))
-            Text(text = mensajeError, color = MaterialTheme.colorScheme.error)
+            Text(text = it, color = MaterialTheme.colorScheme.error)
         }
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Dentro de PantallaRegistro.kt, en el evento onClick del Button:
-
         Button(
             onClick = {
-                val emailLimpio = email.trim()
-
-                when {
-                    !emailLimpio.esEmailValido() -> {
-                        mensajeError = "El formato del correo electrónico es inválido."
-                    }
-                    listaUsuarios.any { it.email.equals(emailLimpio, ignoreCase = true) } -> {
-                        mensajeError = "El correo ingresado ya se encuentra registrado."
-                    }
-                    password.isBlank() || nombre.isBlank() -> {
-                        mensajeError = "Todos los campos son obligatorios."
-                    }
-                    else -> {
-                        // Registro exitoso e ilimitado
-                        listaUsuarios.add(Usuario(emailLimpio, password, nombre, preferenciaSeleccionada))
-                        navController.popBackStack()
-                    }
-                }
+                authViewModel.registrar(
+                    nombre, email, password, preferenciaSeleccionada, tipoPerfil, aceptaTerminos
+                ) { navController.popBackStack() }
             },
-            enabled = aceptaTerminos,
+            enabled = aceptaTerminos && !ui.cargando,
             modifier = Modifier.fillMaxWidth()
         ) {
             Text("Guardar Registro")
         }
 
-        TextButton(onClick = { navController.popBackStack() }) {
+        TextButton(onClick = { authViewModel.limpiarMensajes(); navController.popBackStack() }) {
             Text("Volver")
         }
     }
