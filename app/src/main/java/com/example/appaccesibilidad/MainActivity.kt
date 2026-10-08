@@ -64,6 +64,7 @@ fun NavegacionApp(authViewModel: AuthViewModel, destinoInicial: String? = null) 
         composable("escribir") { ConSesion(authViewModel, navController) { PantallaEscribir(navController, it) } }
         composable("hablar") { ConSesion(authViewModel, navController) { PantallaHablar(navController, it) } }
         composable("buscar") { ConSesion(authViewModel, navController) { PantallaBuscarDispositivo(navController, it) } }
+        composable("ayuda") { ConSesion(authViewModel, navController) { PantallaAyuda(navController) } }
         composable("admin") {
             ConSesion(authViewModel, navController) { usuario ->
                 PantallaAdmin(usuario) { cerrarSesion(authViewModel, navController) }

@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Call
 import androidx.compose.material.icons.filled.Create
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
@@ -48,7 +49,8 @@ fun PantallaHome(navController: NavController, usuario: Usuario, onCerrarSesion:
         listOf(
             OpcionMenu("Escribir", "Escribe y reproduce mensajes en voz alta", Icons.Default.Create, "escribir"),
             OpcionMenu("Hablar", "Convierte tu voz en texto", Icons.Default.Call, "hablar"),
-            OpcionMenu("Buscar dispositivo", "Registra, busca y haz sonar tus dispositivos", Icons.Default.LocationOn, "buscar")
+            OpcionMenu("Buscar dispositivo", "Registra, busca y haz sonar tus dispositivos", Icons.Default.LocationOn, "buscar"),
+            OpcionMenu("Ayuda", "Tutorial paso a paso de la app", Icons.Default.Info, "ayuda")
         )
     }
 
