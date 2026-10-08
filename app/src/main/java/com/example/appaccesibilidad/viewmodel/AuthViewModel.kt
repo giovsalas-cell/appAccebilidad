@@ -1,4 +1,4 @@
-package com.example.appaccesibilidad.viewmodel
+ package com.example.appaccesibilidad.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
